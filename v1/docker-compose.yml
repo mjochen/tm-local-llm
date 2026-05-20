@@ -1,0 +1,27 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    volumes:
+      - ollama_storage:/root/.ollama
+    ports:
+      - "11434:11434"
+    # If your PC has a GPU, you'd add the deploy/resources block here
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    ports:
+      - "3000:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
+      - DEFAULT_MODELS=${ACTIVE_MODEL}
+    volumes:
+      - webui_storage:/app/backend/data
+    depends_on:
+      - ollama
+
+volumes:
+  ollama_storage:
+  webui_storage:
