@@ -1,3 +1,5 @@
+name: llm-tests
+
 services:
   ollama:
     build:

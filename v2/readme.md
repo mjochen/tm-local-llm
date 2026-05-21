@@ -69,19 +69,65 @@ First, we'll remove the volume that we created when running the containers befor
 docker volume rm v1_ollama_storage
 ```
 
+We'll use the following dockerfile ("Dockerfile-ollama"):
+
+```Shell
+FROM ollama/ollama:latest
+ARG CHOSEN_MODEL
+RUN ollama serve & \
+    sleep 5 && \
+    ollama pull ${CHOSEN_MODEL}
+```
+
+Here we see the model is called "CHOSEN_MODEL". This is an Argument, passed through using "ARG". We see where this comes from in the build-step of de Docker-compose.yml.
+
+```Shell
+services:
+  ollama:
+    build:
+      context: .
+      dockerfile: Dockerfile-ollama
+      args:
+        - CHOSEN_MODEL=${MODEL_NAME}
+    container_name: ollama
+    volumes:
+      - ollama_storage:/root/.ollama
+    ports:
+      - "11434:11434"
+
+  open-webui:
+    # No changes to before
+
+volumes:
+  ollama_storage:
+  webui_storage:
+```
+
+And the .env-file:
+
+```Shell
+# The model Ollama should use
+ACTIVE_MODEL=Llama 3.2:1b
+MODEL_NAME=Llama3.2:1b
+
+# Open WebUI security (put a random string here)
+WEBUI_SECRET_KEY=super-secret-key-123
+```
+
+The model name is still in there twice, but that's because
+
 And run the docker compose file. Make sure to add the build-step, it may not be neccessary when the image doesn't exist yet, but if a prevrious version of an image exists and you don't specify "--build" the old image will be used even when there are changes that should be pushed.
 
 ```Shell
 docker compose up -d --build
 ```
 
-We'll use the following dockerfile ("Dockerfile-ollama"):
+When running, we see the model being downloaded:
 
-```Shell
-FROM ollama/ollama:latest
-RUN ollama serve & \
-    sleep 5 && \
-    ollama pull ${ACTIVE_MODEL}
-```
+![](files/2026-05-21-15-06-42.png)
 
-This is the same as before, but uses the .env-file to download the model file defined there.
+And afterwards, we see the model in the folder representing the volume:
+
+![](files/2026-05-21-15-19-09.png)
+
+The blob-folder is about 1.23GB. That is where the model lives.
