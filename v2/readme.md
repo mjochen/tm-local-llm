@@ -66,7 +66,13 @@ For now we'll do it like this:
 First, we'll remove the volume that we created when running the containers before.
 
 ```Shell
-docker volume rm ollama_storage
+docker volume rm v1_ollama_storage
+```
+
+And run the docker compose file. Make sure to add the build-step, it may not be neccessary when the image doesn't exist yet, but if a prevrious version of an image exists and you don't specify "--build" the old image will be used even when there are changes that should be pushed.
+
+```Shell
+docker compose up -d --build
 ```
 
 We'll use the following dockerfile ("Dockerfile-ollama"):

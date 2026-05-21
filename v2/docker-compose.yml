@@ -1,10 +1,11 @@
 services:
   ollama:
-    context: .
-    dockerfile: Dockerfile-ollama
-    args:
-        # Pass the host's .env variable into the Dockerfile's ARG
-      - CHOSEN_MODEL=${ACTIVE_MODEL}
+    build:
+      context: .
+      dockerfile: Dockerfile-ollama
+      args:
+          # Pass the host's .env variable into the Dockerfile's ARG
+        - CHOSEN_MODEL=${ACTIVE_MODEL}
     container_name: ollama
     volumes:
       - ollama_storage:/root/.ollama
