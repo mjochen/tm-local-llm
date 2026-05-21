@@ -1,4 +1,5 @@
 FROM ollama/ollama:latest
+ARG CHOSEN_MODEL
 RUN ollama serve & \
     sleep 5 && \
     ollama pull ${CHOSEN_MODEL}
